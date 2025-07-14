@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 
 app = Flask(__name__)
 
-# Correct zone for Tioga County warnings
 ZONE_TARGET = "NYC007"
 NWS_URL = f"https://api.weather.gov/alerts/active?zone={ZONE_TARGET}"
 
@@ -23,10 +22,20 @@ def fetch_tioga_alerts():
 
     for feature in data.get("features", []):
         props = feature.get("properties", {})
-        geometry = feature.get("geometry", {})
+        geometry = feature.get("geometry")
         event = props.get("event", "Unknown Event")
         severity = props.get("severity", "Unknown")
-        coords = geometry.get("coordinates", [[]])[0]
+        coords = []
+
+        if not geometry:
+            continue
+
+        if geometry.get("type") == "Polygon":
+            coords = geometry.get("coordinates", [[]])[0]
+        elif geometry.get("type") == "MultiPolygon":
+            coords = geometry.get("coordinates", [[[]]])[0][0]
+        else:
+            continue
 
         if not coords:
             continue
@@ -60,5 +69,4 @@ def home():
     return "<h2>Tioga County Placefile API</h2><p>Use <code>/live.pf</code> in GRLevel3.</p>"
 
 if __name__ == "__main__":
-    # Required for binding on Render
     app.run(host="0.0.0.0", port=10000)
