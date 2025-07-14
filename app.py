@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 app = Flask(__name__)
 
 FIPS_TARGET = "36107"
+ZONE_TARGET = "NY059"
 NWS_URL = "https://api.weather.gov/alerts/active"
 
 def fetch_tioga_alerts():
@@ -24,7 +25,8 @@ def fetch_tioga_alerts():
         props = feature.get("properties", {})
         geocodes = props.get("geocode", {})
         fips_list = geocodes.get("FIPS6", [])
-        if FIPS_TARGET not in fips_list:
+        ugc_list = geocodes.get("UGC", [])
+        if FIPS_TARGET not in fips_list and ZONE_TARGET not in ugc_list:
             continue
 
         geometry = feature.get("geometry", {})
@@ -41,6 +43,8 @@ def fetch_tioga_alerts():
             color = "255 0 0"
         elif "Severe" in event:
             color = "255 165 0"
+        elif "Flash Flood" in event:
+            color = "0 0 255"
         else:
             color = "255 255 0"
 
