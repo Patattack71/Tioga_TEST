@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 
 app = Flask(__name__)
 
-ZONE_TARGET = "NYZ035"  # Correct zone for Tioga County, NY
+# Correct zone for Tioga County warnings
+ZONE_TARGET = "NYC007"
 NWS_URL = f"https://api.weather.gov/alerts/active?zone={ZONE_TARGET}"
 
 def fetch_tioga_alerts():
@@ -16,7 +17,7 @@ def fetch_tioga_alerts():
         return f"; Error fetching alerts: {e}\n"
 
     lines = [
-        "Title: Tioga County NY - Live NWS Warnings (By Corrected Zone)",
+        "Title: Tioga County NY - Live NWS Warnings (Zone NYC007)",
         "Refresh: 60"
     ]
 
@@ -25,18 +26,17 @@ def fetch_tioga_alerts():
         geometry = feature.get("geometry", {})
         event = props.get("event", "Unknown Event")
         severity = props.get("severity", "Unknown")
-        updated = props.get("sent", "")
         coords = geometry.get("coordinates", [[]])[0]
 
         if not coords:
             continue
 
-        # Color coding
+        # Color-coding
         if "Tornado" in event:
             color = "255 0 0"
         elif "Severe" in event:
             color = "255 165 0"
-        elif "Flash Flood" in event:
+        elif "Flood" in event:
             color = "0 0 255"
         else:
             color = "255 255 0"
@@ -53,12 +53,12 @@ def fetch_tioga_alerts():
 
 @app.route("/live.pf")
 def serve_placefile():
-    content = fetch_tioga_alerts()
-    return Response(content, mimetype="text/plain")
+    return Response(fetch_tioga_alerts(), mimetype="text/plain")
 
 @app.route("/")
 def home():
-    return "<h2>Tioga County Placefile API</h2><p>Use <code>/live.pf</code> to load in GRLevel3.</p>"
+    return "<h2>Tioga County Placefile API</h2><p>Use <code>/live.pf</code> in GRLevel3.</p>"
 
 if __name__ == "__main__":
+    # Required for binding on Render
     app.run(host="0.0.0.0", port=10000)
