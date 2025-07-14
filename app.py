@@ -17,7 +17,7 @@ def fetch_tioga_alerts():
 
     lines = [
         "Title: Tioga County NY - Live NWS Warnings (Zone NYC007)",
-        "Refresh: 60"
+        "RefreshSeconds: 60"
     ]
 
     for feature in data.get("features", []):
