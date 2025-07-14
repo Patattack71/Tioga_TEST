@@ -40,15 +40,15 @@ def fetch_tioga_alerts():
         if not coords:
             continue
 
-        # Color-coding
+        # Color-coding with lime green for Flood warnings
         if "Tornado" in event:
-            color = "255 0 0"
+            color = "255 0 0"           # Red
         elif "Severe" in event:
-            color = "255 165 0"
+            color = "255 165 0"         # Orange
         elif "Flood" in event:
-            color = "0 0 255"
+            color = "50 205 50"         # Lime green
         else:
-            color = "255 255 0"
+            color = "255 255 0"         # Yellow
 
         timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         lines.append(f"Color: {color}")
