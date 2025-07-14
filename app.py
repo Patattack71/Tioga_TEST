@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 app = Flask(__name__)
 
-ZONE_TARGET = "NYZ059"
+ZONE_TARGET = "NYZ035"  # Correct zone for Tioga County, NY
 NWS_URL = f"https://api.weather.gov/alerts/active?zone={ZONE_TARGET}"
 
 def fetch_tioga_alerts():
@@ -16,7 +16,7 @@ def fetch_tioga_alerts():
         return f"; Error fetching alerts: {e}\n"
 
     lines = [
-        "Title: Tioga County NY - Live NWS Warnings (By Zone)",
+        "Title: Tioga County NY - Live NWS Warnings (By Corrected Zone)",
         "Refresh: 60"
     ]
 
