@@ -4,9 +4,8 @@ from datetime import datetime, timezone
 
 app = Flask(__name__)
 
-FIPS_TARGET = "36107"
 ZONE_TARGET = "NY059"
-NWS_URL = "https://api.weather.gov/alerts/active"
+NWS_URL = f"https://api.weather.gov/alerts/active?zone={ZONE_TARGET}"
 
 def fetch_tioga_alerts():
     try:
@@ -17,18 +16,12 @@ def fetch_tioga_alerts():
         return f"; Error fetching alerts: {e}\n"
 
     lines = [
-        "Title: Tioga County NY - Live NWS Warnings",
+        "Title: Tioga County NY - Live NWS Warnings (By Zone)",
         "Refresh: 60"
     ]
 
     for feature in data.get("features", []):
         props = feature.get("properties", {})
-        geocodes = props.get("geocode", {})
-        fips_list = geocodes.get("FIPS6", [])
-        ugc_list = geocodes.get("UGC", [])
-        if FIPS_TARGET not in fips_list and ZONE_TARGET not in ugc_list:
-            continue
-
         geometry = feature.get("geometry", {})
         event = props.get("event", "Unknown Event")
         severity = props.get("severity", "Unknown")
